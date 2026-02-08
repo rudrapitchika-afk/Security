@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Be My Valentine 💖</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+        margin: 0;
+        height: 100vh;
+        background: linear-gradient(135deg, #ff758c, #9a7eff);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    /* COMMON CARD */
+    .card {
+        background: white;
+        padding: 40px 50px;
+        border-radius: 20px;
+        text-align: center;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+        animation: pop 0.8s ease;
+    }
+
+    @keyframes pop {
+        from { transform: scale(0.85); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+
+    h1 {
+        color: #ff4d6d;
+        margin-bottom: 15px;
+    }
+
+    p {
+        color: #555;
+        margin-bottom: 20px;
+        font-size: 1.1rem;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+        text-align: center;
+        margin-bottom: 15px;
+    }
+
+    button {
+        padding: 12px 30px;
+        border-radius: 25px;
+        border: none;
+        background: #ff4d6d;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    button:hover {
+        transform: scale(1.05);
+    }
+
+    .error {
+        color: red;
+        font-size: 14px;
+        margin-top: 10px;
+    }
+
+    .hint {
+        margin-top: 12px;
+        font-size: 13px;
+        color: #888;
+        font-style: italic;
+    }
+
+    /* BUTTON TRICK */
+    .buttons {
+        position: relative;
+        height: 120px;
+    }
+
+    #noBtn {
+        position: absolute;
+        background: #ddd;
+        color: #333;
+    }
+
+    #yesBtn {
+        background: #ff4d6d;
+        color: white;
+    }
+
+    .success {
+        display: none;
+    }
+
+    .heart {
+        font-size: 4rem;
+        animation: beat 1s infinite;
+    }
+
+    @keyframes beat {
+        0%,100% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+    }
+</style>
+
+<script>
+/* MOBILE BLOCK */
+function isMobileDevice() {
+    return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
+}
+
+if (isMobileDevice()) {
+    document.addEventListener("DOMContentLoaded", () => {
+        document.body.innerHTML = `
+        <div style="
+            height:100vh;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            background:linear-gradient(135deg,#ff758c,#ff7eb3);
+            color:white;
+            text-align:center;
+            padding:30px;
+        ">
+            <div>
+                <h1>💻 Desktop Required</h1>
+                <p>Please open this link on a desktop or laptop 💖</p>
+            </div>
+        </div>`;
+    });
+}
+function getValidOTPs() {
+    const now = new Date();
+
+    function formatTime(date) {
+        const h = String(date.getHours()).padStart(2, '0');
+        const m = String(date.getMinutes()).padStart(2, '0');
+        return h + m;
+    }
+
+    const current = new Date(now);
+    const before = new Date(now);
+    const after = new Date(now);
+
+    before.setMinutes(now.getMinutes() - 1);
+    after.setMinutes(now.getMinutes() + 1);
+
+    return [
+        formatTime(before),
+        formatTime(current),
+        formatTime(after)
+    ];
+}
+
+</script>
+
+</head>
+<body>
+
+<!-- PASSWORD SCREEN -->
+<div class="card" id="passwordScreen">
+    <h1>🔐 Enter Password</h1>
+    <input type="password" id="passwordInput" maxlength="10" placeholder="10-digit password">
+    <button onclick="checkPassword()">Unlock</button>
+    <p>HINT: Your mobile number</p>
+    <div class="error" id="passwordError"></div>
+</div>
+
+<!-- OTP SCREEN -->
+<div class="card" id="otpScreen" style="display:none;">
+    <h1>🔑 Enter OTP</h1>
+    <input type="number" id="otpInput" placeholder="6-digit OTP">
+    <button onclick="checkOTP()">Verify</button>
+    <div class="error" id="otpError"></div>
+    <div class="hint">Hint:Ask Praveen for OTP</div>
+    <div style="color: red;">NOTE: If you are in relationship with someone. Dont ask for OTP and close this window.</div>
+</div>
+
+<!-- VALENTINE PAGE -->
+<div class="card" id="valentineCard" style="display:none;">
+    <h1>Smaily Can you be my Valentine? 💘</h1>
+    <p>You make my life more beautiful every day ✨</p>
+
+    <div class="buttons">
+        <button id="yesBtn">Yes 💖</button>
+        <button id="noBtn">No 😥</button>
+    </div>
+</div>
+
+<!-- SUCCESS -->
+<div class="card success" id="successCard">
+    <div class="heart">❤️</div>
+    <h1>Yayyyy!!! 💕</h1>
+    <p>Happy Valentine’s Day, my love 💐</p>
+    <p>
+        NOTE: If you are angry on me, I’ll come to your room and let you beat me.
+        But please don’t scold me on a phone call 😓 — I can’t handle that 🥺.
+        Take your time for decision-making. I am waiting for your positive response.
+    </p>
+</div>
+
+
+<script>
+/* PASSWORD CHECK */
+const validPasswords = ["8367669643", "9486715683","9848384430"]; 
+const FAKE_OTP = "967646";
+
+function checkPassword() {
+    const val = document.getElementById("passwordInput").value;
+    const err = document.getElementById("passwordError");
+
+    if (validPasswords.includes(val)) {
+        document.getElementById("passwordScreen").style.display = "none";
+        document.getElementById("otpScreen").style.display = "block";
+    } else {
+        err.textContent = "❌ Wrong password. You couldn’t enter into the page.";
+    }
+}
+
+/* OTP CHECK */
+function checkOTP() {
+    const otp = document.getElementById("otpInput").value;
+    const err = document.getElementById("otpError");
+
+    const validOTPs = getValidOTPs();
+
+    if (validOTPs.includes(otp)) {
+        document.getElementById("otpScreen").style.display = "none";
+        document.getElementById("valentineCard").style.display = "block";
+        moveNoButton();
+        autoYes();   // 👈 auto-click timer
+    } else {
+        err.textContent = "❌ Wrong OTP";
+    }
+}
+
+function triggerAutoYes() {
+    setTimeout(() => {
+        yesBtn.click();
+    }, 5000); // 5 seconds after 3+ hovers
+}
+
+
+
+/* NO BUTTON TRICK */
+let noHoverCount = 0;
+let autoYesTriggered = false;
+
+
+const noBtn = document.getElementById("noBtn");
+const yesBtn = document.getElementById("yesBtn");
+const card = document.getElementById("valentineCard");
+const successCard = document.getElementById("successCard");
+
+function moveNoButton() {
+    const rect = card.getBoundingClientRect();
+    const x = Math.random() * (rect.width - noBtn.offsetWidth);
+    const y = Math.random() * (rect.height - noBtn.offsetHeight);
+    noBtn.style.left = x + "px";
+    noBtn.style.top = y + "px";
+}
+
+noBtn.addEventListener("mouseover", () => {
+    moveNoButton();
+    noHoverCount++;
+
+    if (noHoverCount > 3 && !autoYesTriggered) {
+        autoYesTriggered = true;
+        triggerAutoYes();
+    }
+});
+
+
+yesBtn.addEventListener("click", () => {
+    card.style.display = "none";
+    successCard.style.display = "block";
+});
+</script>
+
+</body>
+</html>
