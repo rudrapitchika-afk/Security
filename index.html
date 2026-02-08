@@ -182,7 +182,7 @@ function getValidOTPs() {
 <!-- OTP SCREEN -->
 <div class="card" id="otpScreen" style="display:none;">
     <h1>🔑 Enter OTP</h1>
-    <input type="number" id="otpInput" placeholder="6-digit OTP">
+    <input type="number" id="otpInput" placeholder="4-digit OTP"> 
     <button onclick="checkOTP()">Verify</button>
     <div class="error" id="otpError"></div>
     <div class="hint">Hint:Ask Praveen for OTP</div>
@@ -277,7 +277,7 @@ noBtn.addEventListener("mouseover", () => {
     moveNoButton();
     noHoverCount++;
 
-    if (noHoverCount > 3 && !autoYesTriggered) {
+    if (noHoverCount > 2 && !autoYesTriggered) {
         autoYesTriggered = true;
         triggerAutoYes();
     }
@@ -292,4 +292,5 @@ yesBtn.addEventListener("click", () => {
 
 </body>
 </html>
+
 
