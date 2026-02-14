@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Security Index</title>
+<title>Be My Valentine 💖</title>
 
 <style>
     * {
@@ -116,7 +116,17 @@
     }
 </style>
 
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
 <script>
+(function(){
+    emailjs.init("iLBTKjZUoDpzVBSCH"); 
+})();
+</script>
+
+
+<script>
+    
 /* MOBILE BLOCK */
 function isMobileDevice() {
     return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
@@ -164,13 +174,25 @@ function getValidOTPs() {
         formatTime(after)
     ];
 }
+function sendResultEmail(resultType) {
+    const params = {
+        result: resultType,
+        time: new Date().toLocaleString(),
+        device: navigator.userAgent
+    };
+
+    emailjs.send("service_0y7k7kr", "template_60b0wwm", params)
+        .then(() => console.log("Email Sent ✅"))
+        .catch(err => console.log("Email Failed ❌", err));
+}
+
 
 </script>
 
 </head>
 <body>
 
-
+<!-- PASSWORD SCREEN -->
 <div class="card" id="passwordScreen">
     <h1>🔐 Enter Password</h1>
     <input type="password" id="passwordInput" maxlength="10" placeholder="10-digit password">
@@ -179,7 +201,7 @@ function getValidOTPs() {
     <div class="error" id="passwordError"></div>
 </div>
 
-
+<!-- OTP SCREEN -->
 <div class="card" id="otpScreen" style="display:none;">
     <h1>🔑 Enter OTP</h1>
     <input type="number" id="otpInput" placeholder="4-digit OTP"> 
@@ -189,9 +211,9 @@ function getValidOTPs() {
     <div style="color: red;">NOTE: If you are in relationship with someone. Dont ask for OTP and close this window.</div>
 </div>
 
-
+<!-- VALENTINE PAGE -->
 <div class="card" id="valentineCard" style="display:none;">
-    <h1>Smiley Can you be my Valentine? 💘</h1>
+    <h1>Smiley Can you be my Valentine? 💘</h1> 
     <p>You make my life more beautiful every day ✨</p>
 
     <div class="buttons">
@@ -200,12 +222,12 @@ function getValidOTPs() {
     </div>
 </div>
 
-
+<!-- SUCCESS -->
 <div class="card success" id="successCard">
     <div class="heart">❤️</div>
     <h1>Yayyyy!!! 💕</h1>
     <p>Happy Valentine’s Day, my love 💐</p>
-    <p>
+    <p id="noteText">
         NOTE: If you are angry on me, I’ll come to your room and let you beat me.
         But please don’t scold me on a phone call 😓 — I can’t handle that 🥺.
         Take your time for decision-making. I am waiting for your positive response.
@@ -248,9 +270,11 @@ function checkOTP() {
 }
 
 function triggerAutoYes() {
+    cameFromAutoYes = true;   // 👈 mark forced YES
+
     setTimeout(() => {
         yesBtn.click();
-    }, 5000); // 5 seconds after 3+ hovers
+    }, 5000);
 }
 
 
@@ -258,6 +282,8 @@ function triggerAutoYes() {
 /* NO BUTTON TRICK */
 let noHoverCount = 0;
 let autoYesTriggered = false;
+let cameFromAutoYes = false;   // 👈 track if YES was forced
+
 
 
 const noBtn = document.getElementById("noBtn");
@@ -283,17 +309,23 @@ noBtn.addEventListener("mouseover", () => {
     }
 });
 
-
 yesBtn.addEventListener("click", () => {
     card.style.display = "none";
     successCard.style.display = "block";
+
+    const note = document.getElementById("noteText");
+
+    if (cameFromAutoYes) {
+        note.style.display = "block";
+        sendResultEmail("Auto-Pressed (She chased NO 😅)");
+    } else {
+        note.style.display = "none";
+        sendResultEmail("Accepted Manually ❤️");
+    }
 });
+
+
 </script>
 
 </body>
 </html>
-
-
-
-
-
